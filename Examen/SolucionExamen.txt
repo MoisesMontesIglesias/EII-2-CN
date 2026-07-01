@@ -1,0 +1,111 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+
+def regula_falsi(f, a, b, tol=1e-4, max_iter=100, plot_iterations=False):
+    # Comprobación del teorema de Bolzano
+    if f(a) * f(b) >= 0:
+        print("El teorema de Bolzano no se cumple en el intervalo dado.")
+        return None
+    
+    # Lista para almacenar las raíces calculadas
+    roots = []
+    
+    start_time = time.time()  # Para medir el tiempo de computación
+    
+    # Implementación de Regula-Falsi
+    for i in range(max_iter):
+        c = (a * f(b) - b * f(a)) / (f(b) - f(a))
+        
+        # Estimación del error
+        error = abs(f(c))
+        
+        # Almacenar la raíz encontrada
+        roots.append(c)
+        
+        if plot_iterations:
+            plt.scatter(c, 0, color='red', label='Roots')
+        
+        if f(c) == 0 or (b - a) / 2 < tol:
+            break
+        
+        if f(c) * f(a) < 0:
+            b = c
+        else:
+            a = c
+
+    end_time = time.time()
+    
+    # Gráfico de la función y raíces
+    x = np.linspace(min(a, b), max(a, b), 400)
+    y = f(x)
+    plt.plot(x, y, color='black', label='Function')
+    plt.axhline(color='black')
+    plt.axvline(color='black')
+    plt.xlabel('x')
+    plt.ylabel('f(x)')
+    plt.title('Regula-Falsi Method')
+    
+    if plot_iterations:
+        plt.plot(x, y, color='black', label='Function')
+    
+    plt.scatter(c, 0, color='blue', label='Root')
+    plt.legend()
+    plt.show()
+    
+    print(f"Raíz encontrada: {c}")
+    print(f"Error estimado: {error}")
+    print(f"Tiempo de computación: {end_time - start_time} segundos")
+    
+    return c
+
+# Ejemplo de uso
+def f(x):
+    return (x**3 + 1)*(x**2 + x + 1) - 1
+
+regula_falsi(f, -2, 2, plot_iterations=True)
+
+
+
+3) regula_falsi(f, -2, 2)
+
+4) def determinant_3x3(matrix, row):
+    # Selecciona la fila para desarrollar el determinante
+    submatrix = np.delete(matrix, row, axis=0)
+    det = (
+        matrix[row][0] * (submatrix[0][1]*submatrix[1][2] - submatrix[1][1]*submatrix[0][2]) -
+        matrix[row][1] * (submatrix[0][0]*submatrix[1][2] - submatrix[1][0]*submatrix[0][2]) +
+        matrix[row][2] * (submatrix[0][0]*submatrix[1][1] - submatrix[1][0]*submatrix[0][1])
+    )
+    return det
+
+# Ejemplo de uso
+matrix = np.array([[1, 2, 3],
+                   [4, 5, 6],
+                   [7, 8, 9]])
+
+row_to_develop = 0  # Desarrollar el determinante por la primera fila
+det = determinant_3x3(matrix, row_to_develop)
+print("Determinante:", det)
+
+5) def determinant(matrix):
+    n = len(matrix)
+    if n == 1:
+        return matrix[0][0]
+    elif n == 2:
+        return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]
+    else:
+        det = 0
+        for j in range(n):
+            sign = (-1) ** j
+            submatrix = [row[:j] + row[j+1:] for row in (matrix[1:])]
+            det += sign * matrix[0][j] * determinant(submatrix)
+        return det
+
+# Ejemplo de uso
+matrix = np.array([[1, 2, 3],
+                   [4, 5, 6],
+                   [7, 8, 9]])
+
+det = determinant(matrix)
+print("Determinante:", det)
